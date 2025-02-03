@@ -76,11 +76,11 @@ let loginpassword_error=document.querySelector('.loginpassword_error')
 console.log(loginform)
 if(loginform){
 loginform.addEventListener('submit',(e)=>{
+    e.preventDefault();
 
     let isValid=true;
     let emailpattern=/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     if(!emailpattern.test(loginemail.value)){
-      e.preventDefault()
       loginemail_error.innerHTML='please enter valid email'
       isValid=false;
     }else{
@@ -88,7 +88,6 @@ loginform.addEventListener('submit',(e)=>{
     }
 
     if(loginpassword.value.length<8){
-        e.preventDefault()
         loginpassword_error.innerHTML='please enter atleast 8 digit password'
         isValid=false;
     }else{
@@ -105,7 +104,11 @@ loginform.addEventListener('submit',(e)=>{
 
         if(userFound){
             alert("login successfully")
-            
+            window.location.href = "http://127.0.0.1:5500/movie.html";
+            // setTimeout(() => {
+                window.location.href = "http://127.0.0.1:5500/movie.html";
+            // }, 1000);
+        
         }else{
             alert("please try again")
         }
@@ -114,4 +117,51 @@ loginform.addEventListener('submit',(e)=>{
 
 })   
     
+}
+
+
+
+// movie code
+let display_cards=document.querySelector('.display_cards')
+let moviename=document.querySelector('.moviename')
+
+
+async function displayMovie(){
+    try{
+        let query=moviename.value;
+        let req=await fetch(`https://www.omdbapi.com/?s=${query}&apikey=3461ef5d`)
+        let res=await req.json()
+    console.log(res);
+     if(res.Response){
+        movieCard(res.Search)
+     }
+
+    }
+    
+    catch(error){
+        display_cards.innerHTML = `<p>Error fetching data. Please try again later.</p>`;
+        console.error("Error:", error);
+    }
+   
+moviename.value=""
+}
+
+moviename.addEventListener('keypress',(event)=>{
+    if(event.key==="Enter") 
+displayMovie();
+})
+
+function movieCard(movies){
+    debugger;
+    let searchEles = display_cards.children;
+    console.log(searchEles);
+    
+    for(let elem of searchEles) {elem.remove()}
+    for (let movie of movies){
+        let moviesrc=movie.Poster;
+        let img=document.createElement('img')
+        img.classList.add("card")
+        display_cards.appendChild(img)
+        img.src=moviesrc;
+    }
 }
